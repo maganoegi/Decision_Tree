@@ -11,22 +11,28 @@ class Node():
         'isLeaf'
     ]
 
-    def __init__(self, dataset, isLeaf=False):
+    def __init__(self, dataset):
         self.data = dataset
         self.children = []
-        self.isLeaf = isLeaf
+        self.isLeaf = False
         
-        self.display()
-
 
     def build_tree(self):
         optimal_question = self.__find_optimal_split_question(self.data)
-        true_rows, false_rows = self.__split(optimal_question, self.data)
-        self.children = [Node(true_rows, optimal_question != None), Node(false_rows, optimal_question != None)]
-        for child in self.children:
-            if not child.isLeaf:
+        if not optimal_question:
+            self.isLeaf = True
+        else:
+            true_rows, false_rows = self.__split(optimal_question, self.data)
+            self.children = [Node(true_rows), Node(false_rows)]
+            for child in self.children:
                 child.build_tree()
         
+    def display(self):
+        print(self)
+        if not self.isLeaf:
+            for child in self.children:
+                child.display()
+
     def __str__(self):
         count_0, count_1, _ = self.__getClassCounts(self.data)
         isLeafString = "LEAF" if self.isLeaf else "NODE"
@@ -39,11 +45,6 @@ class Node():
         count_1 = total_classes - count_0
         return count_0, count_1, total_classes
 
-    def display(self):
-        print(self)
-        if not self.isLeaf:
-            for child in self.children:
-                child.display()
 
     def __process_classes(self, data_rows) -> list:
         """ calculates the number of different classes in the matrix.
@@ -120,25 +121,4 @@ class Node():
         
         return best_question
 
-# TODO REMOVE DEBUG PURPOSE
 
-def parse_dataset(data):
-    dataset = []
-    for line in data:
-        stripped = line.strip()
-        split = stripped.split()
-        row = [int(val) for val in split[:-1]] + [split[-1]]
-        dataset.append(row)
-    return dataset
-
-if __name__ == "__main__":
-    filename = "data/monks-1.train"
-
-    # data = open(args.filename, 'r')
-    data = open(filename, 'r')
-
-    dataset = parse_dataset(data)
-
-    root_node = Node(dataset)
-
-    root_node.build_tree()

@@ -45,6 +45,8 @@ if __name__ == "__main__":
 
     root_node.build_tree()
 
+    root_node.display()
+
     # print(root_node)
 
     
