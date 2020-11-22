@@ -2,7 +2,7 @@
 import argparse
 import sys
 import os
-from lib import *
+from lib.node import Node
 
 def run_tests(filename):
     GREEN = "\033[92m"
@@ -19,14 +19,33 @@ def parse_args():
 
     return args
 
+def parse_dataset(data):
+    dataset = []
+    for line in data:
+        stripped = line.strip()
+        split = stripped.split()
+        row = [int(val) for val in split[:-1]] + [split[-1]]
+        dataset.append(row)
+    return dataset
 
 if __name__ == "__main__":
-    args = parse_args()
+    # args = parse_args()
 
-    if args.test:
-        run_tests("lib/tests.py")
+    # if args.test:
+    #     run_tests("lib/tests.py")
 
-    # dataset = open(args.filename, 'r')
+    filename = "data/monks-1.test"
 
-    # root_node = 
+    # data = open(args.filename, 'r')
+    data = open(filename, 'r')
+
+    dataset = parse_dataset(data)
+
+    root_node = Node(dataset)
+
+    root_node.build_tree()
+
+    # print(root_node)
+
+    
 
