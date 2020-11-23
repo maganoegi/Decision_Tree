@@ -29,15 +29,14 @@ def parse_dataset(data):
     return dataset
 
 if __name__ == "__main__":
-    # args = parse_args()
+    args = parse_args()
 
-    # if args.test:
-    #     run_tests("lib/tests.py")
+    if args.test:
+        run_tests("lib/tests.py")
 
-    filename = "data/monks-1.test"
+    filename = "data/monks-2.test"
 
-    # data = open(args.filename, 'r')
-    data = open(filename, 'r')
+    data = open(args.filename, 'r')
 
     dataset = parse_dataset(data)
 
@@ -47,7 +46,6 @@ if __name__ == "__main__":
 
     root_node.display()
 
-    # print(root_node)
 
     
 

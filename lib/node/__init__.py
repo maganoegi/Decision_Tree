@@ -8,7 +8,9 @@ class Node():
     __slots__ = [
         'data',
         'children',
-        'isLeaf'
+        'isLeaf',
+        'question',
+        'best_gain'
     ]
 
     def __init__(self, dataset):
@@ -27,17 +29,21 @@ class Node():
             for child in self.children:
                 child.build_tree()
         
-    def display(self):
-        print(self)
+    def display(self, level=0):
+        print('\t' * level + str(self))
         if not self.isLeaf:
             for child in self.children:
-                child.display()
+                child.display(level+1)
 
-    def __str__(self):
+    def __str__(self, level=0):
         count_0, count_1, _ = self.__getClassCounts(self.data)
         isLeafString = "LEAF" if self.isLeaf else "NODE"
+        color = "\033[42m" if self.isLeaf else ""
+        end_color = "\033[0m"
+        display_question = self.question if self.question else ""
+        best_gain = round(self.best_gain, 2) if self.best_gain else ""
 
-        return f"{isLeafString} ratio {count_0}/{count_1}"
+        return f"{color}{isLeafString}{end_color} {count_0}/{count_1} {display_question} {best_gain}"
 
     def __getClassCounts(self, data):
         total_classes = len(data)
@@ -76,7 +82,6 @@ class Node():
         return -1 * (0 if (proba_0 == 0.0 or proba_1 == 0) else (proba_0 * math.log2(proba_0) + proba_1 * math.log2(proba_1)))
 
     def __info_gain(self, lhs, rhs, entropy, q):
-        #TODO: additional research on this one from the class
         weight = float(len(lhs)) / (len(lhs) + len(rhs))
         return entropy - weight * self.__entropy(lhs) - (1 - weight) * self.__entropy(rhs)
 
@@ -92,7 +97,6 @@ class Node():
 
     def __find_optimal_split_question(self, data_rows):
         """ checks for all possible splits, evaluates them by their entropy and information gain, then splits """
-        # TODO: check for relationships in entropy, information gain and gini impurity
         best_gain, best_question = 0, None
         entr = self.__entropy(data_rows)
         
@@ -118,6 +122,9 @@ class Node():
                 if gain > best_gain:
                     best_gain = gain
                     best_question = q
+
+        self.best_gain = best_gain
+        self.question = best_question
         
         return best_question
 
